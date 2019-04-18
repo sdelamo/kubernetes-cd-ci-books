@@ -1,4 +1,7 @@
 steps:
+  - name: 'java:8'
+    entrypoint: 'bash'
+    args: ['-c', './gradlew build']
   - name: 'gcr.io/cloud-builders/gradle'
     args: ['jibDockerBuild']
   - name: 'gcr.io/cloud-builders/docker'

@@ -1,0 +1,9 @@
+ext {
+    yamlVersion=1.23
+}
+repositories {
+    jcenter()
+}
+dependencies {
+    implementation "org.yaml:snakeyaml:$yamlVersion"
+}

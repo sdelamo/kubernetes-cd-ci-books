@@ -73,3 +73,11 @@ tasks.withType(JavaCompile){
 run {
     systemProperty "micronaut.environments", System.getProperty('micronaut.environments')
 }
+
+task generateBuildInfo(type: example.micronaut.GenerateBuildInfoTask) {
+    projectName = project.name
+    versionPropertyName = "projectVersion"
+    inputFile = file("${projectDir}/gradle.properties")
+    outputFile = file("${buildDir}/classes/java/main/META-INF/build-info.properties")
+}
+classes.dependsOn 'generateBuildInfo'

@@ -1,0 +1,93 @@
+import example.ReplaceTagNameTask
+
+plugins {
+    id "io.spring.dependency-management" version "1.0.6.RELEASE"
+    id "com.github.johnrengelman.shadow" version "4.0.2"
+    id "application"
+    id "groovy"
+    id "net.ltgt.apt-eclipse" version "0.21"
+    id "net.ltgt.apt-idea" version "0.21"
+    id "com.google.cloud.tools.jib" version "1.0.2"
+
+}
+
+version projectVersion
+group "books"
+
+repositories {
+    jcenter()
+    maven { url "https://jcenter.bintray.com" }
+    maven {
+        url "https://oss.sonatype.org/content/repositories/snapshots/"
+// Because  name: 'gcr.io/cloud-builders/gradle is Gradle 4
+//        content {
+//            includeVersionByRegex('io\\.micronaut.*', '.*', '.*BUILD-SNAPSHOT')
+//        }
+    }
+}
+
+dependencyManagement {
+    imports {
+        mavenBom "io.micronaut:micronaut-bom:$micronautVersion"
+    }
+}
+
+configurations {
+    // for dependencies that are needed for development only
+    developmentOnly 
+}
+
+dependencies {
+    annotationProcessor "io.micronaut:micronaut-inject-java"
+    annotationProcessor "io.micronaut:micronaut-validation"
+    compile "io.micronaut:micronaut-inject"
+    compile "io.micronaut:micronaut-validation"
+    compile "io.micronaut:micronaut-runtime"
+    compile "io.micronaut:micronaut-http-client"
+    compile "io.micronaut:micronaut-http-server-netty"
+    runtime "ch.qos.logback:logback-classic:1.2.3"
+    testAnnotationProcessor "io.micronaut:micronaut-inject-java"
+    testCompile "io.micronaut:micronaut-inject-groovy"
+    testAnnotationProcessor "io.micronaut:micronaut-inject-java"
+    testCompile("org.spockframework:spock-core:$spockVersion") {
+        exclude group: "org.codehaus.groovy", module: "groovy-all"
+    }
+    compile "io.micronaut:micronaut-management"
+    runtime "io.micronaut.kubernetes:micronaut-kubernetes-discovery-client:$micronautKubernetesDiscoveryClientVersion"
+
+}
+
+shadowJar {
+    mergeServiceFiles()
+}
+
+run.classpath += configurations.developmentOnly
+test.classpath += configurations.developmentOnly
+run.jvmArgs('-noverify', '-XX:TieredStopAtLevel=1')
+
+mainClassName = "books.Application"
+tasks.withType(JavaCompile){
+    options.encoding = "UTF-8"
+    options.compilerArgs.add('-parameters')
+}
+
+
+task copyCloudBuildDeploy(type: Copy) {
+    from file("$projectDir/cloudbuild-deploy.yaml")
+    into buildDir
+}
+
+task replaceTagNameWithProjectVersion(type: ReplaceTagNameTask) {
+    dependsOn 'copyCloudBuildDeploy'
+}
+
+run {
+    systemProperty "micronaut.environments", System.getProperty('micronaut.environments')
+}
+
+jib {
+    from {
+//        image = 'gcr.io/distroless/java:debug'
+        image = 'alvarosanchez/alpine-with-curl'
+    }
+}

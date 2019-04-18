@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: books
+spec:
+  selector:
+    matchLabels:
+      app: books
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: books
+    spec:
+      containers:
+        - env:
+            - name: APP_BOOK_TITLE
+              valueFrom:
+                configMapKeyRef:
+                  key: app.book-title
+                  name: books-configmap
+            - name: APP_BOOK_PAGES
+              valueFrom:
+                configMapKeyRef:
+                  key: app.book-pages
+                  name: books-configmap
+          name: books
+          image: gcr.io/k8s-mn-ci-cd/books:books-0.23
+          imagePullPolicy: "Always"
+          ports:
+            - containerPort: 8080
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 5
+            timeoutSeconds: 3
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: books
+spec:
+  selector:
+    app: books
+  type: LoadBalancer
+  ports:
+    - protocol: "TCP"
+      port: 8080
+      targetPort: 8080

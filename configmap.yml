@@ -1,7 +1,0 @@
-apiVersion: v1
-data:
-  app.book-title: Harry Potter
-  app.book-pages: 80
-kind: ConfigMap
-metadata:
-  name: sample-configmap

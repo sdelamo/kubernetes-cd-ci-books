@@ -25,7 +25,7 @@ spec:
                   key: app.book-pages
                   name: books-configmap
           name: books
-          image: gcr.io/micronaut-kubernetes-ci-cd/books:0.8
+          image: gcr.io/micronaut-kubernetes-ci-cd/books:0.9
           imagePullPolicy: "Always"
           ports:
             - containerPort: 8080
@@ -50,7 +50,7 @@ metadata:
 spec:
   selector:
     app: books
-  type: LoadBalancer
+  type: ClusterIP
   ports:
     - protocol: "TCP"
       port: 8080

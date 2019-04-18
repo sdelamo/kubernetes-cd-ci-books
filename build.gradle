@@ -11,7 +11,7 @@ plugins {
 }
 
 version projectVersion
-group "example.micronaut"
+group "example.micronaut.books"
 
 repositories {
     jcenter()

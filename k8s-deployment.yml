@@ -25,7 +25,7 @@ spec:
                   key: app.book-pages
                   name: books-configmap
           name: books
-          image: gcr.io/k8s-mn-ci-cd/books:books-0.23
+          image: gcr.io/k8s-mn-ci-cd/books:latest
           imagePullPolicy: "Always"
           ports:
             - containerPort: 8080

@@ -1,16 +1,12 @@
 steps:
-  - name: 'java:8'
-    env: ['GRADLE_USER_HOME=cache']
-    entrypoint: 'bash'
-    args: ['-c', './gradlew build']
   - name: 'gcr.io/cloud-builders/gradle'
-    args: [':books:jibDockerBuild']
+    args: ['jibDockerBuild']
   - name: 'gcr.io/cloud-builders/docker'
     args: ['tag', 'books:$TAG_NAME', 'gcr.io/$PROJECT_ID/books:$TAG_NAME']
   - name: 'gcr.io/cloud-builders/docker'
     args: ['push', 'gcr.io/$PROJECT_ID/books:$TAG_NAME']
   - name: 'gcr.io/cloud-builders/kubectl'
-    args: ['apply', '-f', 'books/k8s-deployment.yml']
+    args: ['apply', '-f', 'k8s-deployment.yml']
     env:
       - 'CLOUDSDK_COMPUTE_ZONE=${_COMPUTE_ZONE}'
       - 'CLOUDSDK_CONTAINER_CLUSTER=${_CLUSTER_NAME}'

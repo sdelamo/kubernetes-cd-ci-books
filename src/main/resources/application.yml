@@ -1,7 +1,7 @@
 micronaut:
-    application:
-        name: books
+  application:
+    name: books
 endpoints:
-    health:
-        enabled: true
-        details-visible: ANONYMOUS
+  health:
+    enabled: true
+    details-visible: ANONYMOUS
